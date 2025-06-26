@@ -27,5 +27,5 @@ app.use((req, res) => {
 
 const server = http.createServer(app);
 server.listen(process.env.APP_PORT || 3000, () => {
-    console.log(`server is running on port ${process.env.APP_PORT || 3000}...`)
+    console.log(`server is running on port ${process.env.APP_PORT || 3000}`)
 })
