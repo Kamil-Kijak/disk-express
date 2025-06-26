@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Cze 26, 2025 at 04:32 PM
+-- Generation Time: Cze 26, 2025 at 08:57 PM
 -- Wersja serwera: 8.0.39
 -- Wersja PHP: 8.2.26
 
@@ -29,10 +29,10 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `files` (
   `ID` int NOT NULL,
-  `SerialNumber` varchar(21) COLLATE utf8mb4_general_ci NOT NULL,
+  `SerialNumber` varchar(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `ID_userOwner` int NOT NULL,
-  `Path` text COLLATE utf8mb4_general_ci NOT NULL,
-  `Permision` enum('me','friends','link') COLLATE utf8mb4_general_ci DEFAULT 'me',
+  `Path` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `Permision` enum('me','friends','link') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'me',
   `UploadDate` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -69,8 +69,8 @@ CREATE TABLE `friendsrequests` (
 CREATE TABLE `sociallinks` (
   `ID` int NOT NULL,
   `ID_user` int NOT NULL,
-  `Name` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
-  `Url` varchar(75) COLLATE utf8mb4_general_ci NOT NULL
+  `Name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `Url` varchar(75) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -81,18 +81,30 @@ CREATE TABLE `sociallinks` (
 
 CREATE TABLE `users` (
   `ID` int NOT NULL,
-  `SerialNumber` varchar(21) COLLATE utf8mb4_general_ci NOT NULL,
+  `SerialNumber` varchar(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `Email` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `Password` char(32) COLLATE utf8mb4_general_ci NOT NULL,
-  `Username` varchar(25) COLLATE utf8mb4_general_ci NOT NULL,
-  `Name` varchar(25) COLLATE utf8mb4_general_ci NOT NULL,
-  `Surname` varchar(25) COLLATE utf8mb4_general_ci NOT NULL,
-  `Country` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `ProfileImg` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `Description` tinytext COLLATE utf8mb4_general_ci,
-  `PricingPlan` enum('free','pro','ultimate') COLLATE utf8mb4_general_ci DEFAULT 'free',
+  `Password` char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `Username` varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `Name` varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `Surname` varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `Country` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `ProfileImg` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `Description` tinytext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `PricingPlan` enum('free','pro','ultimate') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'free',
   `DoubleVeryfication` tinyint(1) DEFAULT '0',
-  `VeryficationCode` int DEFAULT NULL
+  `AutoLogin` tinyint(1) DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabeli dla tabeli `veryficationcodes`
+--
+
+CREATE TABLE `veryficationcodes` (
+  `ID` int NOT NULL,
+  `UserEmail` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `Code` varchar(21) COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -135,7 +147,15 @@ ALTER TABLE `sociallinks`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`ID`),
-  ADD UNIQUE KEY `SerialNumber` (`SerialNumber`);
+  ADD UNIQUE KEY `SerialNumber` (`SerialNumber`),
+  ADD UNIQUE KEY `Email` (`Email`);
+
+--
+-- Indeksy dla tabeli `veryficationcodes`
+--
+ALTER TABLE `veryficationcodes`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `UserEmail` (`UserEmail`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -169,6 +189,12 @@ ALTER TABLE `sociallinks`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
+  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `veryficationcodes`
+--
+ALTER TABLE `veryficationcodes`
   MODIFY `ID` int NOT NULL AUTO_INCREMENT;
 
 --
@@ -200,6 +226,12 @@ ALTER TABLE `friendsrequests`
 --
 ALTER TABLE `sociallinks`
   ADD CONSTRAINT `sociallinks_ibfk_1` FOREIGN KEY (`ID_user`) REFERENCES `users` (`ID`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `veryficationcodes`
+--
+ALTER TABLE `veryficationcodes`
+  ADD CONSTRAINT `veryficationcodes_ibfk_1` FOREIGN KEY (`UserEmail`) REFERENCES `users` (`Email`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
