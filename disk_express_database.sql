@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Cze 26, 2025 at 08:57 PM
+-- Generation Time: Cze 27, 2025 at 08:58 PM
 -- Wersja serwera: 8.0.39
 -- Wersja PHP: 8.2.26
 
@@ -20,6 +20,18 @@ SET time_zone = "+00:00";
 --
 -- Database: `disk_express_database`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabeli dla tabeli `emailcodes`
+--
+
+CREATE TABLE `emailcodes` (
+  `ID` int NOT NULL,
+  `Email` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `Code` varchar(21) COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -63,6 +75,18 @@ CREATE TABLE `friendsrequests` (
 -- --------------------------------------------------------
 
 --
+-- Struktura tabeli dla tabeli `securitycodes`
+--
+
+CREATE TABLE `securitycodes` (
+  `ID` int NOT NULL,
+  `UserEmail` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `Code` varchar(21) COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Struktura tabeli dla tabeli `sociallinks`
 --
 
@@ -95,21 +119,15 @@ CREATE TABLE `users` (
   `AutoLogin` tinyint(1) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
---
--- Struktura tabeli dla tabeli `veryficationcodes`
---
-
-CREATE TABLE `veryficationcodes` (
-  `ID` int NOT NULL,
-  `UserEmail` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `Code` varchar(21) COLLATE utf8mb4_general_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
 --
 -- Indeksy dla zrzutów tabel
 --
+
+--
+-- Indeksy dla tabeli `emailcodes`
+--
+ALTER TABLE `emailcodes`
+  ADD PRIMARY KEY (`ID`);
 
 --
 -- Indeksy dla tabeli `files`
@@ -136,6 +154,13 @@ ALTER TABLE `friendsrequests`
   ADD KEY `ID_userReceiver` (`ID_userReceiver`);
 
 --
+-- Indeksy dla tabeli `securitycodes`
+--
+ALTER TABLE `securitycodes`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `UserEmail` (`UserEmail`);
+
+--
 -- Indeksy dla tabeli `sociallinks`
 --
 ALTER TABLE `sociallinks`
@@ -151,15 +176,14 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `Email` (`Email`);
 
 --
--- Indeksy dla tabeli `veryficationcodes`
---
-ALTER TABLE `veryficationcodes`
-  ADD PRIMARY KEY (`ID`),
-  ADD KEY `UserEmail` (`UserEmail`);
-
---
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `emailcodes`
+--
+ALTER TABLE `emailcodes`
+  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `files`
@@ -180,6 +204,12 @@ ALTER TABLE `friendsrequests`
   MODIFY `ID` int NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `securitycodes`
+--
+ALTER TABLE `securitycodes`
+  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `sociallinks`
 --
 ALTER TABLE `sociallinks`
@@ -190,12 +220,6 @@ ALTER TABLE `sociallinks`
 --
 ALTER TABLE `users`
   MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `veryficationcodes`
---
-ALTER TABLE `veryficationcodes`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables
@@ -222,16 +246,16 @@ ALTER TABLE `friendsrequests`
   ADD CONSTRAINT `friendsrequests_ibfk_2` FOREIGN KEY (`ID_userReceiver`) REFERENCES `users` (`ID`) ON DELETE CASCADE;
 
 --
+-- Constraints for table `securitycodes`
+--
+ALTER TABLE `securitycodes`
+  ADD CONSTRAINT `securitycodes_ibfk_1` FOREIGN KEY (`UserEmail`) REFERENCES `users` (`Email`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `sociallinks`
 --
 ALTER TABLE `sociallinks`
   ADD CONSTRAINT `sociallinks_ibfk_1` FOREIGN KEY (`ID_user`) REFERENCES `users` (`ID`) ON DELETE CASCADE;
-
---
--- Constraints for table `veryficationcodes`
---
-ALTER TABLE `veryficationcodes`
-  ADD CONSTRAINT `veryficationcodes_ibfk_1` FOREIGN KEY (`UserEmail`) REFERENCES `users` (`Email`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
