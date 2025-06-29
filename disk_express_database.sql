@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Cze 27, 2025 at 08:58 PM
+-- Generation Time: Cze 29, 2025 at 08:57 PM
 -- Wersja serwera: 8.0.39
 -- Wersja PHP: 8.2.26
 
@@ -30,7 +30,8 @@ SET time_zone = "+00:00";
 CREATE TABLE `emailcodes` (
   `ID` int NOT NULL,
   `Email` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `Code` varchar(21) COLLATE utf8mb4_general_ci NOT NULL
+  `Code` varchar(21) COLLATE utf8mb4_general_ci NOT NULL,
+  `Verified` tinyint(1) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -81,7 +82,8 @@ CREATE TABLE `friendsrequests` (
 CREATE TABLE `securitycodes` (
   `ID` int NOT NULL,
   `UserEmail` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `Code` varchar(21) COLLATE utf8mb4_general_ci NOT NULL
+  `Code` varchar(21) COLLATE utf8mb4_general_ci NOT NULL,
+  `Verified` tinyint(1) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -115,7 +117,7 @@ CREATE TABLE `users` (
   `ProfileImg` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `Description` tinytext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   `PricingPlan` enum('free','pro','ultimate') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'free',
-  `DoubleVeryfication` tinyint(1) DEFAULT '0',
+  `DoubleVerification` tinyint(1) DEFAULT '0',
   `AutoLogin` tinyint(1) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
