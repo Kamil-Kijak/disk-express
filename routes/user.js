@@ -54,10 +54,19 @@ router.post("/register", [
                                     return res.status(500).json({error:"Database error"})
                                 }
                             })
-                            res.status(200).json({success:true, message:"new user registered"})
+                            // creating new token
+                            const refreshToken = jwt.sign({serial:serialNumber, username:username}, process.env.REFRESH_TOKEN_KEY, {
+                                expiresIn:"7d",
+                            })
+                            res.cookie("REFRESH_TOKEN", refreshToken, {
+                                maxAge:1000 * 60 * 60 * 24 * 7,
+                                httpOnly:true,
+                                secure:false
+                            })
+                            res.status(200).json({success:true, message:"new user registered", user:{serialNumber:serialNumber, username:username}})
                          })
                 } else {
-                    return res.status(400).json({error:"Email is not verificated"})
+                    return res.status(400).json({requireVerification:true,error:"Email is not verificated"})
                 }
             })
         } else {
@@ -65,6 +74,22 @@ router.post("/register", [
         }
     })
 });
+
+router.post("/check_email_exist",
+     [checkDataExisting(["email"])],
+    (req, res) => {
+        const {email} = req.body;
+        connection.query("select Count(ID) as count from users where email = ?", [email], (err, result) => {
+            if(err) {
+                return res.status(500).json({error:"Database error"})
+            }
+            if(result[0].count > 0) {
+                res.status(200).json({success:true, message:"email exist"})
+            } else {
+                res.status(406).json({error:"This email doesn't exist"})
+            }
+        })
+    });
 
 router.post("/login", [checkDataExisting(["email", "password"])], (req, res) => {
     const {email, password} = req.body;
@@ -83,11 +108,28 @@ router.post("/login", [checkDataExisting(["email", "password"])], (req, res) => 
                     if(result.length == 0) {
                         res.status(400).json({error:"Invalid password"})
                     } else {
+                        let successLogin = false;
                         if(result[0].DoubleVerification == 1) {
-
+                            connection.query("select COUNT(ID) as count from securitycodes where Email = ? and Verified = 1", [email], (err, result) => {
+                                if(err) {
+                                    return res.status(500).json({error:"Database error"})
+                                }
+                                if(result[0].count >= 0) {
+                                    // deleting old securitycodes
+                                    connection.query("delete from securitycodes where email = ?", [email], (err, result) => {
+                                        if(err) {
+                                            return res.status(500).json({error:"Database error"})
+                                        }
+                                    })
+                                    successLogin = true;
+                                }
+                            })
                         } else {
+                            successLogin = true;
+                        }
+                        if(successLogin) {
                             // creating new token
-                            const refreshToken = jwt.sign({serial:serialNumber, username:username}, process.env.REFRESH_TOKEN_KEY, {
+                            const refreshToken = jwt.sign({serial:result[0].serialNumber, username:result[0].username}, process.env.REFRESH_TOKEN_KEY, {
                                 expiresIn:"7d",
                             })
                             res.cookie("REFRESH_TOKEN", refreshToken, {
@@ -95,12 +137,22 @@ router.post("/login", [checkDataExisting(["email", "password"])], (req, res) => 
                                 httpOnly:true,
                                 secure:false
                             })
+                            res.status(200).json({success:true, message:"successfully user login", user:{
+                                serialNumber:result[0].serialNumber, username:result[0].username
+                            }})
+                        } else {
+                            res.status(400).json({requireVerification:true,error:"failed to login"})
                         }
-                        res.status(200).json({success:true, message:"successfully user login"})
                     }
                  })
         }
     })
+})
+
+router.get("/logout", (req, res) => {
+    res.clearCookie("ACCESS_TOKEN");
+    res.clearCookie("REFRESH_TOKEN");
+    res.status(200).json({success:true, message:"logout successfully"})
 })
 
 module.exports = router;
