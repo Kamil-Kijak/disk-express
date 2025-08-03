@@ -1,0 +1,25 @@
+{
+  "name": "disk-express",
+  "version": "1.0.0",
+  "description": "Web application",
+  "license": "MIT",
+  "author": "Kamil Kijak",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "dev": "nodemon"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "limiter": "^3.0.0",
+    "multer": "^2.0.2",
+    "mysql2": "^3.14.3",
+    "nodemailer": "^7.0.5"
+  }
+}
